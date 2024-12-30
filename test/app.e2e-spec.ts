@@ -1,103 +1,139 @@
-import { Test } from "@nestjs/testing"
-import { AppModule } from "../src/app.module"
-import { INestApplication, ValidationPipe } from "@nestjs/common";
-import * as pactum from "pactum";
-import { PrismaService } from "../src/prisma/prisma.service";
-import { AuthDto } from "../src/auth/dto";
+import { Test } from '@nestjs/testing';
+import { AppModule } from '../src/app.module';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as pactum from 'pactum';
+import { PrismaService } from '../src/prisma/prisma.service';
+import { AuthDto } from '../src/auth/dto';
 
-describe(("App e2e test"), () => {
+describe('App e2e test', () => {
   // declaring app
-  let app:INestApplication;
+  let app: INestApplication;
   let prisma: PrismaService;
 
-  beforeAll(async()=>{
+  beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule],
-    }) .compile()
+    }).compile();
     app = moduleRef.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true
-    }))
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+      }),
+    );
     await app.init();
-    prisma = app.get(PrismaService)
-    prisma.cleanDb()
-  pactum.request.setBaseUrl("http://localhost:3333")
+    prisma = app.get(PrismaService);
+    prisma.cleanDb();
+    pactum.request.setBaseUrl('http://localhost:3333');
   });
   afterAll(async () => {
     await app.close();
-  })
-  
-  describe("Auth", () => {
-    describe("signup", () => {
-    it("should throw error if email is empty", ()=>{
-        return pactum.spec().post(`/auth/signup`).withBody({password: "123456"}).expectStatus(400)
-    })
-    it("should throw error if password is empty", ()=>{
-        return pactum.spec().post(`/auth/signup`).withBody({email: "test1@gmail.com"}).expectStatus(400)
-    })
-    it("should throw error if no body", ()=>{
-        return pactum.spec().post(`/auth/signup`).expectStatus(400)
-    })
-      it("should signup", ()=>{
-        const dto:AuthDto = {
-          email: "test@gmail.com",
-          password: "123456"
-        }
-        return pactum.spec().post(`/auth/signup`).withBody(dto).expectStatus(201)
-      })
-    })
+  });
 
-    describe("signin", () => {
-      describe("signup", () => {
-        it("should throw error if email is empty", ()=>{
-            return pactum.spec().post(`/auth/signup`).withBody({password: "123456"}).expectStatus(400)
-        })
-        it("should throw error if password is empty", ()=>{
-            return pactum.spec().post(`/auth/signup`).withBody({email: "test1@gmail.com"}).expectStatus(400)
-        })
-        it("should throw error if no body", ()=>{
-            return pactum.spec().post(`/auth/signup`).expectStatus(400)
-        })
-        it("should signin", ()=>{
-          return pactum.spec().post(`/auth/login`).withBody({email: "test@gmail.com", password: "123456"}).expectStatus(200).stores("userAt","access_token")
-        })
-      })
-    })
-  })
+  describe('Auth', () => {
+    describe('signup', () => {
+      it('should throw error if email is empty', () => {
+        return pactum
+          .spec()
+          .post(`/auth/signup`)
+          .withBody({ password: '123456' })
+          .expectStatus(400);
+      });
+      it('should throw error if password is empty', () => {
+        return pactum
+          .spec()
+          .post(`/auth/signup`)
+          .withBody({ email: 'test1@gmail.com' })
+          .expectStatus(400);
+      });
+      it('should throw error if no body', () => {
+        return pactum.spec().post(`/auth/signup`).expectStatus(400);
+      });
+      it('should signup', () => {
+        const dto: AuthDto = {
+          email: 'test7@gmail.com',
+          password: '123456',
+        };
+        return pactum
+          .spec()
+          .post(`/auth/signup`)
+          .withBody(dto)
+          .expectStatus(201);
+      });
+    });
 
-  describe("User", () => {
-    describe("getMe", () => {
-      it("should get current user", ()=>{
-        return pactum.spec().get(`/users/me`).withHeaders({
-          Authorization: "Bearer $S{userAt}"
-        }).expectStatus(200).inspect()
-      })      
-    })
-    describe("editUser", () => {
-      
-    })
-  })
+    describe('signin', () => {
+      describe('signup', () => {
+        it('should throw error if email is empty', () => {
+          return pactum
+            .spec()
+            .post(`/auth/signup`)
+            .withBody({ password: '123456' })
+            .expectStatus(400);
+        });
+        it('should throw error if password is empty', () => {
+          return pactum
+            .spec()
+            .post(`/auth/signup`)
+            .withBody({ email: 'test7@gmail.com' })
+            .expectStatus(400);
+        });
+        it('should throw error if no body', () => {
+          return pactum.spec().post(`/auth/signup`).expectStatus(400);
+        });
+        it('should signin', () => {
+          return pactum
+            .spec()
+            .post(`/auth/login`)
+            .withBody({ email: 'test7@gmail.com', password: '123456' })
+            .expectStatus(200)
+            .stores('userAt', 'access_token');
+        });
+      });
+    });
+  });
 
-  describe("Bookmark", () => {
+  describe('User', () => {
+    describe('getMe', () => {
+      it('should get current user', () => {
+        return pactum
+          .spec()
+          .get(`/users/me`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200)
+          .inspect();
+      });
+    });
+    describe('editUser', () => {
+      it('should edit user', () => {
+        const dto = {
+          // email: "test44@gmail.com",
+          firstName: 'first-name44',
+          lastName: 'last-name44',
+        };
+        return pactum
+          .spec()
+          .patch(`/users/edit`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .inspect();
+      });
+    });
+  });
 
-    describe("createBookmark", () => {
-      
-    })
+  describe('Bookmark', () => {
+    describe('createBookmark', () => {});
 
-    describe("getBookmarks", () => {
-      
-    })
+    describe('getBookmarks', () => {});
 
-    describe("getBookmarkById", () => {
-      
-    })
+    describe('getBookmarkById', () => {});
 
-    describe("editBookmark", () => {
-      
-    })
+    describe('editBookmark', () => {});
 
-    describe("deleteBookmark", () => {
-      
-    })
-  })
-})
+    describe('deleteBookmark', () => {});
+  });
+});
