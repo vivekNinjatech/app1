@@ -44,15 +44,16 @@ export class BookmarkController {
   @HttpCode(200)
   @Patch('update/:id')
   update(
+    @GetUser('id') userId: number,
     @Param('id') id: number,
     @Body() updateBookmarkDto: UpdateBookmarkDto,
   ) {
-    return this.bookmarkService.update(+id, updateBookmarkDto);
+    return this.bookmarkService.update(+id, userId, updateBookmarkDto);
   }
 
   @HttpCode(200)
   @Delete('delete/:id')
-  remove(@Param('id') id: number) {
-    return this.bookmarkService.remove(+id);
+  remove(@GetUser('id') userId: number, @Param('id') id: number) {
+    return this.bookmarkService.remove(+id, userId);
   }
 }
