@@ -129,14 +129,75 @@ describe('App e2e test', () => {
   });
 
   describe('Bookmark', () => {
-    describe('createBookmark', () => {});
+    describe('createBookmark', () => {
+      it('should create bookmark', () => {
+        return pactum
+          .spec()
+          .post(`/bookmarks/create`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody({
+            title: 'title',
+            link: 'link',
+            description: 'description',
+          })
+          .expectStatus(201);
+      });
+    });
 
-    describe('getBookmarks', () => {});
+    describe('getBookmarks', () => {
+      it('should get bookmarks', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks/get-all`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
 
-    describe('getBookmarkById', () => {});
+    describe('getBookmarkById', () => {
+      it('should get bookmark by id', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks/get-one/1`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
 
-    describe('editBookmark', () => {});
+    describe('editBookmark', () => {
+      it('should edit bookmark', () => {
+        const dto = {
+          title: 'updated-title',
+          link: 'updated-link',
+          description: 'updated-description',
+        };
+        return pactum
+          .spec()
+          .patch(`/bookmarks/update/1`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .withBody(dto)
+          .expectStatus(200);
+      });
+    });
 
-    describe('deleteBookmark', () => {});
+    describe('deleteBookmark', () => {
+      it('should delete bookmark', () => {
+        return pactum
+          .spec()
+          .delete(`/bookmarks/delete/1`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
   });
 });
