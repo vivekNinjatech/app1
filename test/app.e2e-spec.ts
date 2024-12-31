@@ -21,6 +21,8 @@ describe('App e2e test', () => {
       }),
     );
     await app.init();
+    await app.listen(3333);
+
     prisma = app.get(PrismaService);
     prisma.cleanDb();
     pactum.request.setBaseUrl('http://localhost:3333');
@@ -52,6 +54,8 @@ describe('App e2e test', () => {
         const dto: AuthDto = {
           email: 'test7@gmail.com',
           password: '123456',
+          firstName: 'first-name',
+          lastName: 'last-name',
         };
         return pactum
           .spec()
@@ -101,10 +105,10 @@ describe('App e2e test', () => {
           .withHeaders({
             Authorization: 'Bearer $S{userAt}',
           })
-          .expectStatus(200)
-          .inspect();
+          .expectStatus(200);
       });
     });
+
     describe('editUser', () => {
       it('should edit user', () => {
         const dto = {
@@ -119,8 +123,7 @@ describe('App e2e test', () => {
             Authorization: 'Bearer $S{userAt}',
           })
           .withBody(dto)
-          .expectStatus(200)
-          .inspect();
+          .expectStatus(200);
       });
     });
   });
