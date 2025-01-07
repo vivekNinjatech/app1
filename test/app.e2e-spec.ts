@@ -199,5 +199,18 @@ describe('App e2e test', () => {
           .expectStatus(200);
       });
     });
+
+    describe('getAllBookmarks', () => {
+      it('should get all bookmarks', () => {
+        return pactum
+          .spec()
+          .get(`/bookmarks/get-all-bookmarks`)
+          .withHeaders({
+            Authorization: 'Bearer $S{userAt}',
+          })
+          .expectStatus(200);
+      });
+    });
+    
   });
 });

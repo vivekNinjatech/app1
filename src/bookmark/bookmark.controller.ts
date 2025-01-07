@@ -56,4 +56,10 @@ export class BookmarkController {
   remove(@GetUser('id') userId: number, @Param('id') id: number) {
     return this.bookmarkService.remove(+id, userId);
   }
+
+  @HttpCode(200)
+  @Get('get-all-bookmarks')
+  getAllBookmarks() {
+    return this.bookmarkService.getAllBookmarks();
+  }
 }

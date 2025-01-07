@@ -74,4 +74,8 @@ export class BookmarkService {
       },
     });
   }
+
+  async getAllBookmarks(){
+    return this.prisma.bookmark.findMany();
+  }
 }
